@@ -45,4 +45,4 @@ After cloning this repo, follow these steps to run the application:
 - In the second terminal, run ```celery -A main.celery worker --beat -l info``` to start celery with celery-beat.
 - In the third terminal, run ```python main.py``` or ```python3 main.py``` to start the backend server.
 - In the fourth terminal, run ```python -m http.server 8080``` or ```python3 -m http.server 8080``` to start a python server for the frontend.
-- Finally, navigate to ```http://127.0.0.1:8080/login``` to open the login page.
+- Finally, navigate to ```http://127.0.0.1:8080/#/login``` to open the login page.
