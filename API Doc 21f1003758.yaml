@@ -1,0 +1,829 @@
+openapi: 3.0.0
+info:
+  description: |
+    Bloglite api documentation...
+  version: 1.0.0
+  title: Bloglite Api Documentation
+servers:
+  # Added by API Auto Mocking Plugin
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/nk-droid/MAD2_Project/1.0.0
+  - description: Flask backend server
+    url: http://localhost:5000
+    
+tags:
+  - name: user
+    description: Operations about user
+    
+paths:
+  /api/signup:
+    post:
+      tags:
+        - user
+      summary: Add a new user
+      operationId: addUser
+      parameters:
+        - name: body
+          in: header
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+              username:
+                type: string
+              email:
+                type: string
+              password:
+                type: string
+              gender:
+                type: string
+      responses:
+        '201':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    example: Successfully signed up.
+        '400':
+          description: bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    example: Oops some error occurred.
+        '403':
+          description: already exists
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    example: Email id already in use.
+  /api/user:
+    get:
+      tags:
+        - user
+      summary: Get some details of the user.
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  username:
+                    type: string
+                  profilepic:
+                    type: string
+        '401':
+          description: unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    example: "Please login first."
+      security:
+        - authentication_token: []
+  /api/feed:
+    get:
+      tags:
+        - user
+      summary: Get all feeds of the user.
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  posts:
+                    type: object
+                    properties:
+                      username:
+                        type: string
+                      profilepic:
+                        type: string
+                      id:
+                        type: integer
+                      title:
+                        type: string
+                      caption:
+                        type: string
+                      image:
+                        type: string
+                      diff:
+                        type: integer
+                      timestamp:
+                        type: string
+                      archived:
+                        type: integer
+      security:
+        - authentication_token: []
+  /api/post:
+    post:
+      tags:
+        - user
+      summary: Add a new post
+      description: Adds a new post
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                image:
+                  type: string
+                  format: binary
+                title:
+                  type: string
+                caption:
+                  type: string
+                username:
+                  type: string
+      responses:
+        '201':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    example: "Successfully posted."
+        '400':
+          description: invalid data supplied
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    example: "Something went wrong."
+      security:
+        - authentication_token: []
+  '/api/{username}':
+    get:
+      tags:
+        - user
+      summary: Get profile details of the user
+      parameters:
+        - name: username
+          in: path
+          description: The username of the user.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                  username:
+                    type: string
+                  profilepic:
+                    type: string
+                    format: binary
+                  about:
+                    type: string
+                  followers:
+                    type: array
+                    items:
+                      type: array
+                      items: 
+                        type: string
+                      example: ["id","name","username","profilepic","timestamp"]
+                    
+                  followings:
+                    type: array
+                    items:
+                      type: array
+                      items: 
+                        type: string
+                      example: ["id","name","username","profilepic","timestamp"]
+                    
+                  posts:
+                    type: array
+                    items: 
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        username:
+                          type: string
+                        profilepic:
+                          type: string
+                          format: binary
+                        title:
+                          type: string
+                        caption:
+                          type: string
+                        image:
+                          type: string
+                          format: binary
+                        diff: 
+                          type: integer
+                        timestamp:
+                          type: string
+                        archived:
+                          type: integer
+                  dt:
+                    type: array
+                    items: 
+                      type: string
+                    example: ["str","str"]
+                  IsFollowing:
+                    type: integer
+                  ArchivedPosts:
+                    type: array
+                    items: 
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        username:
+                          type: string
+                        profilepic:
+                          type: string
+                          format: binary
+                        title:
+                          type: string
+                        caption:
+                          type: string
+                        image:
+                          type: string
+                          format: binary
+                        diff: 
+                          type: integer
+                        timestamp:
+                          type: string
+                        archived:
+                          type: integer
+  '/api/search':
+    post:
+      tags:
+        - user
+      summary: Get all users having starting values of their usernames equal to query
+      parameters:
+        - name: query
+          in: header
+          description: Query to match with the starting of usernames.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  users:
+                    items:
+                      properties:
+                        name:
+                          type: string
+                        username:
+                          type: string
+                        profilepic:
+                          type: string
+                          format: binary
+                    
+  '/api/{username}/followers':
+      get:
+        tags:
+          - user
+        summary: Get all followers
+        parameters:
+          - name: username
+            in: path
+            description: The username whose all followers need to be fetched
+            required: true
+            schema:
+              type: string
+        responses:
+          '200':
+            description: successful operation
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    followers:
+                      type: array
+                      items:
+                        type: array
+                        items: 
+                          type: string
+                        example: ["id","name","username","profilepic","timestamp"]
+        security:
+        - authentication_token: []
+                    
+  '/api/{username}/followings':
+    get:
+      tags:
+        - user
+      summary: Get all followings
+      parameters:
+        - name: username
+          in: path
+          description: The username whose all followings need to be fetched
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  followings:
+                    type: array
+                    items:
+                      type: array
+                      items: 
+                        type: string
+                      example: ["id","name","username","profilepic","timestamp"]
+      security:
+        - authentication_token: []
+  '/api/{username}/post/{id}':
+    get:
+      tags:
+        - user
+      summary: Get details of the post
+      parameters: 
+        - name: username
+          in: path
+          description: The username of the user who posted this post.
+          required: true
+          schema:
+            type: string
+        - name: id
+          in: path
+          description: The id of the post
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  post:
+                      properties:
+                        id:
+                          type: integer
+                        title:
+                          type: string
+                        caption:
+                          type: string
+                        image:
+                          type: string
+                          format: binary
+                        name:
+                          type: string
+                        username:
+                          type: string
+                        profilepic:
+                          type: string
+                          format: binary
+                        status:
+                          type: integer
+      security:
+        - authentication_token: []
+    delete:
+      tags:
+        - user
+      summary: Delete the post.
+      parameters: 
+        - name: username
+          in: path
+          description: The username of the user who posted this post.
+          required: true
+          schema:
+            type: string
+        - name: id
+          in: path
+          description: The id of the post
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    example: "Successfully deleted."
+      security:
+        - authentication_token: []
+    patch:
+      tags:
+        - user
+      summary: Change archived status of the post.
+      parameters: 
+        - name: username
+          in: path
+          description: The username of the user who posted this post.
+          required: true
+          schema:
+            type: string
+        - name: id
+          in: path
+          description: The id of the post
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    example: "Successfully archived."
+      security:
+        - authentication_token: []
+    post:
+      tags:
+        - user
+      summary: Update the post.
+      parameters: 
+        - name: username
+          in: path
+          description: The username of the user who posted this post.
+          required: true
+          schema:
+            type: string
+        - name: id
+          in: path
+          description: The id of the post
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    example: "Successfully updated."
+      security:
+        - authentication_token: []
+  '/api/follow/{username}':
+    get:
+      tags:
+        - user
+      summary: Start following the user with the username provided.
+      parameters: 
+        - name: username
+          in: path
+          description: The username of the user whom the logged in user is going to follow.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    example: "You are following username now."
+      security:
+        - authentication_token: []
+  '/api/{username}/unfollow/{following}':
+    get:
+      tags:
+        - user
+      summary: Unfollow the user with the username "following".
+      parameters: 
+        - name: username
+          in: path
+          description: The username of the user who is going to unfollow user with the username following.
+          required: true
+          schema:
+            type: string
+        - name: following
+          in: path
+          description: The username of the user whom the logged in user is going to unfollow.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    example: "Successfully unfollowed."
+        '400':
+          description: failed operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    example: "Something went wrong."
+      security:
+        - authentication_token: []
+  '/api/{username}/settings':
+    get:
+      tags:
+        - user
+      summary: Get the settings
+      parameters:
+        - name: username
+          in: path
+          description: The username whose settings need to be fetched.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  username:
+                    type: string
+                  name:
+                    type: string
+                  email:
+                    type: string
+                  gender:
+                    type: string
+                  about:
+                    type: string
+                  profilepic:
+                    type: string
+                    format: binary
+      security:
+        - authentication_token: []
+    patch:
+      tags:
+        - user
+      summary: Update the settings
+      parameters:
+        - name: username
+          in: path
+          description: The username whose settings need to be updated.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    example: "Settings updated successfully."
+      security:
+        - authentication_token: []
+  '/api/{username}/remove/{follower}':
+    get:
+      tags:
+        - user
+      summary: Update the settings
+      parameters:
+        - name: username
+          in: path
+          description: The username of the user who is going to remove her follower.
+          required: true
+          schema:
+            type: string
+        - name: follower
+          in: path
+          description: The username of the user who is getting removed.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    example: "Successfully unfollowed."
+      security:
+        - authentication_token: []
+  '/api/{username}/export/post':
+    get:
+      tags:
+        - user
+      summary: Export all ports in a CSV file
+      parameters:
+        - name: username
+          in: path
+          description: The username who is exporting her posts.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            text/csv:
+              schema:
+                type: string
+                format: binary
+      security:
+        - authentication_token: []
+  '/api/{username}/import/post':
+    get:
+      tags:
+        - user
+      summary: Get a sample CSV file for importing posts
+      parameters:
+        - name: username
+          in: path
+          description: The username who is downloading the sample CSV file.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            text/csv:
+              schema:
+                type: string
+                format: binary 
+      security:
+          - authentication_token: []
+    post:
+      tags:
+        - user
+      summary: Add some new posts using a CSV file
+      parameters:
+        - name: username
+          in: path
+          description: The username who is importing the posts.
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                CSVfile:
+                  type: string
+                  format: binary
+                image1:
+                  type: string
+                  format: binary
+                image2:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    example: "All posts added successfully."
+      security:
+        - authentication_token: []
+  '/api/logout':
+    get:
+      tags:
+        - user
+      summary: Logout the user.
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    example: "Successfully logged out."
+      security:
+          - authentication_token: []
+components:
+  schemas:
+    Users:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        username:
+          type: string
+        email:
+          type: string
+        gender:
+          type: string
+        password:
+          type: string
+        profilepic:
+          type: string
+        about: 
+          type: string
+        active:
+          type: boolean
+        fs_uniquifier:
+          type: string
+      xml:
+        name: Users
+    Posts:
+      type: object
+      properties:
+        id:
+          type: integer
+        user_id:
+          type: integer
+        title:
+          type: string
+        caption:
+          type: string
+        imageURL:
+          type: string
+        timestamp:
+          type: string
+        archived:
+          type: integer
+      xml:
+        name: Posts
+    Followers:
+      type: object
+      properties:
+        id:
+          type: integer
+        user_id:
+          type: integer
+        followers:
+          type: integer
+        timestamp:
+          type: string
+      xml:
+        name: Followers
+    Followings:
+      type: object
+      properties:
+        id:
+          type: integer
+        user_id:
+          type: integer
+        followings:
+          type: integer
+        timestamp:
+          type: string
+      xml:
+        name: Followings
+  securitySchemes:
+    authentication_token:
+      type: http
+      scheme: bearer
+security:
+  - authentication_token: []

@@ -1,0 +1,16 @@
+flask
+flask_sqlalchemy
+Flask-Security-Too
+flask_cors
+flask_restful
+flask-login
+email_validator
+pillow
+bleach
+pdfkit
+wkhtmltopdf
+bcrypt
+celery[redis]
+flask_caching
+pandas
+matplotlib
